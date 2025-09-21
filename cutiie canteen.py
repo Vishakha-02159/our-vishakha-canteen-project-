@@ -120,15 +120,15 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
-
 for i, item in enumerate(weekly_menu[day]):
     with cols[i]:
         st.markdown(f"<div class='food-card'>", unsafe_allow_html=True)
-      st.image(item["img"], use_container_width=True, caption=...)
- , caption=f"{item['name']} - ₹{item['price']}")
+        st.image(item["img"], use_container_width=True, caption=f"{item['name']} - ₹{item['price']}")
         qty = st.number_input(f"Qty {item['name']}", 0, 10, 0, key=item["name"])
         quantities[item["name"]] = qty
         st.markdown("</div>", unsafe_allow_html=True)
+
+
 
 # ---------- Bill Calculation ----------
 st.markdown("---")
