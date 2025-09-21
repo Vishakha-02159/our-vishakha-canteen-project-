@@ -24,7 +24,7 @@ st.markdown(page_bg, unsafe_allow_html=True)
 
 # ---- MENU DATA WITH IMAGE URLs ----
 weekly_menu = {
-    "Monday": {1: ("Poha", 20, "hhttps://blog.eatfit.in/wp-content/uploads/2022/12/image-31-1024x1024.png"),
+    "Monday": {1: ("Poha", 20, "https://blog.eatfit.in/wp-content/uploads/2022/12/image-31-1024x1024.png"),
                2: ("Tea", 10, "https://masalaandchai.com/wp-content/uploads/2021/07/Masala-Chai.jpg"),
                3: ("Samosa", 15, "https://im.whatshot.in/img/2019/Aug/shutterstock-1381163087-cropped-1565077618.jpg")},
     "Tuesday": {1: ("Idli", 30, "https://www.healthifyme.com/blog/wp-content/uploads/2018/03/idly2.jpeg"),
