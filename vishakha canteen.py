@@ -7,7 +7,7 @@ st.set_page_config(page_title="College Canteen ", page_icon="🍽", layout="wide
 page_bg = """
 <style>
 [data-testid="stAppViewContainer"] {
-    background-image: url("https://static.vecteezy.com/system/resources/previews/034/059/265/large_2x/fresh-delicious-fruit-cuisine-with-appetizing-variations-in-gourmet-meal-studio-food-background-photo.jpg");
+    background-image: url("https://image.slidesdocs.com/responsive-images/background/simple-light-vegetable-salad-a-healthy-meal-choice-powerpoint-background_3394e43e71__960_540.jpg");
     background-size: cover;
     background-attachment: fixed;
 }
