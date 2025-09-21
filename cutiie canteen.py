@@ -1,110 +1,132 @@
 import streamlit as st
-from PIL import Image, ImageOps
-import requests
-from io import BytesIO
 
-# ---- PAGE CONFIG ----
-st.set_page_config(page_title="College Canteen", page_icon="🍽", layout="wide")
+# ---------- Page Config ----------
+st.set_page_config(page_title="College Canteen", page_icon="🍴", layout="wide")
 
-# ---- CUSTOM BACKGROUND WITH SOFT DARK OVERLAY ----
+# ---------- Custom Background & CSS ----------
 page_bg = """
 <style>
+/* Background Gradient */
 [data-testid="stAppViewContainer"] {
-    background-image: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), 
-                      url("https://images.unsplash.com/photo-1600891964599-f61ba0e24092?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxfDB8MXxyYW5kb218MHx8Y2FudGVlbnwxfHx8fHww&ixlib=rb-4.0.3&q=80&w=1080");
-    background-size: cover;
-    background-position: center;
+    background: linear-gradient(135deg, #f9f9f9, #e3f2fd);
     background-attachment: fixed;
 }
+
+/* Remove header background */
 [data-testid="stHeader"] {
     background: rgba(0,0,0,0);
 }
-.block-container {
-    background: rgba(255,255,255,0);  /* fully transparent */
-    padding: 1rem;
+
+/* Headings */
+h1 {
+    color: #d84315;
+    text-align: center;
+    font-family: 'Trebuchet MS', sans-serif;
+    font-size: 3em;
+}
+h2, h3 {
+    color: #1565c0;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+/* Food Card Style */
+.food-card {
+    padding: 20px;
+    margin: 10px;
+    border-radius: 20px;
+    box-shadow: 2px 4px 12px rgba(0,0,0,0.25);
+    background-color: white;
+    text-align: center;
+    transition: transform 0.25s;
+}
+.food-card:hover {
+    transform: scale(1.05);
+    box-shadow: 4px 8px 20px rgba(0,0,0,0.3);
+}
+
+/* Order Section */
+.order-box {
+    background: #ffffffcc;
+    padding: 15px;
+    border-radius: 15px;
+    box-shadow: 2px 4px 12px rgba(0,0,0,0.2);
 }
 </style>
 """
 st.markdown(page_bg, unsafe_allow_html=True)
 
-# ---- MENU DATA WITH IMAGE URLS ----
+# ---------- Title ----------
+st.markdown("<h1>🍽 Welcome to Our College Canteen</h1>", unsafe_allow_html=True)
+st.write("### 🌟 Good Food = Good Mood! Stay Happy 😋")
+
+# ---------- Weekly Menu (Mon-Sat) ----------
 weekly_menu = {
-    "Monday": {1: ("Poha", 20, "https://blog.eatfit.in/wp-content/uploads/2022/12/image-31-1024x1024.png"),
-               2: ("Tea", 10, "https://masalaandchai.com/wp-content/uploads/2021/07/Masala-Chai.jpg"),
-               3: ("Samosa", 15, "https://im.whatshot.in/img/2019/Aug/shutterstock-1381163087-cropped-1565077618.jpg")},
-    "Tuesday": {1: ("Idli", 30, "https://www.healthifyme.com/blog/wp-content/uploads/2018/03/idly2.jpeg"),
-                2: ("Coffee", 15, "https://images.pexels.com/photos/414720/pexels-photo-414720.jpeg"),
-                3: ("Sandwich", 40, "https://www.baltana.com/files/wallpapers-1/Sandwich-01186.jpg")},
-    "Wednesday": {1: ("Paratha", 25, "https://i.ytimg.com/vi/3rkXplTcAOA/maxresdefault.jpg"),
-                  2: ("Lassi", 30, "https://www.yourhungerstop.com/wp-content/uploads/2015/04/SweetLassi.jpg"),
-                  3: ("Chole Bhature", 50, "https://tse3.mm.bing.net/th/id/OIP.ymwwbTsC9la3suJmIJ-3eQHaE_?rs=1&pid=ImgDetMain")},
-    "Thursday": {1: ("Maggi", 25, "https://i.pinimg.com/originals/fd/f6/ab/fdf6ab5a30b921bc4b8b68ccf5db040e.png"),
-                 2: ("Tea", 10, "https://masalaandchai.com/wp-content/uploads/2021/07/Masala-Chai.jpg"),
-                 3: ("Pakora", 20, "https://tse4.mm.bing.net/th/id/OIP.apZBEEyC3P6-NDhQ9BgHYQHaE7?rs=1&pid=ImgDetMain")},
-    "Friday": {1: ("Dosa", 40, "https://png.pngtree.com/background/20230613/original/pngtree-plate-of-dosa-with-sauce-on-top-picture-image_3422751.jpg"),
-               2: ("Cold Drink", 20, "https://www.shutterstock.com/shutterstock/photos/2075670211/display_1500/stock-photo-poznan-poland-oct-bottles-of-global-soft-drink-brands-including-products-of-coca-cola-2075670211.jpg"),
-               3: ("Vada Pav", 15, "https://i.pinimg.com/736x/c4/f2/df/c4f2df229b163a961afbf8001c69d8fd.jpg")},
-    "Saturday": {1: ("Thali", 80, "https://img.freepik.com/premium-photo/indian-hindu-veg-thali-also-known-as-food-platter-is-complete-lunch-dinner-meal-closeup-selective-focus_466689-9137.jpg"),
-                 2: ("Roti Sabzi", 50, "https://st2.depositphotos.com/19320080/46492/i/950/depositphotos_464927076-stock-photo-puri-sabji-poori-sabzi-indian.jpg"),
-                 3: ("Jalebi", 30, "https://as1.ftcdn.net/v2/jpg/04/39/55/84/1000_F_439558401_z4va4arE91OhmGE8XkEhZCRQiYEMlarb.jpg")}
+    "Monday": [
+        {"name": "Poha", "price": 25, "img": "https://2.bp.blogspot.com/_jg7bOK0iY5E/S-b5FvInviI/AAAAAAAAAGQ/SbVL41SwyTc/s1600/Poha_01.jpg"},
+        {"name": "Tea", "price": 10, "img": "https://i.pinimg.com/originals/b4/fd/ea/b4fdea77c96e520dcbec32114fd765fa.jpg"},
+        {"name": "Vada Pav", "price": 20, "img": "https://www.indianhealthyrecipes.com/wp-content/uploads/2019/10/vada-pav-recipe-680x510.jpg"}
+    ],
+    "Tuesday": [
+        {"name": "Idli", "price": 30, "img": "https://www.healthifyme.com/blog/wp-content/uploads/2018/03/idly2.jpeg"},
+        {"name": "Coffee", "price": 15, "img": "https://images.pexels.com/photos/1170659/pexels-photo-1170659.jpeg?cs=srgb&dl=art-bread-brown-1170659.jpg&fm=jpg"},
+        {"name": "Sandwich", "price": 40, "img": "https://tse4.mm.bing.net/th/id/OIP.k6hKBbbjWhRD-jxynvecVQHaFP?rs=1&pid=ImgDetMain&o=7&rm=3"}
+    ],
+    "Wednesday": [
+        {"name": "Pav Bhaji", "price": 50, "img": "https://tse4.mm.bing.net/th/id/OIP.ggkkqdypy7CimfbKdCl9TgHaJQ?rs=1&pid=ImgDetMain&o=7&rm=3"},
+        {"name": "Cold Drink", "price": 25, "img": "https://c8.alamy.com/comp/WX0H4X/bottles-of-global-soft-drink-brands-including-products-of-coca-cola-company-and-pepsico-WX0H4X.jpg"},
+        {"name": "Samosa", "price": 15, "img": "https://wallpaperaccess.com/full/2069188.jpg"}
+    ],
+    "Thursday": [
+        {"name": "Chole Bhature", "price": 60, "img": "https://wallpaperaccess.com/full/10449454.jpg"},
+        {"name": "Lassi", "price": 30, "img": "https://www.indianveggiedelight.com/wp-content/uploads/2023/01/sweet-lassi-recipe-1.jpg"},
+        {"name": "Pakora", "price": 20, "img": "https://th.bing.com/th/id/R.5fb78cef3a6b2b1badc917d2798a86f0?rik=pMm%2bIoYNo%2bi7rw&riu=http%3a%2f%2fwww.archanaskitchen.com%2fimages%2farchanaskitchen%2f1-Author%2fShaheen_Ali%2fVeg_Noodle_Pakora.jpg&ehk=wKCzNj%2bMX%2bVUdeQskTZACMTHCIBXEn02zNDiBZGAEjU%3d&risl=&pid=ImgRaw&r=0"}
+    ],
+    "Friday": [
+        {"name": "Masala Dosa", "price": 50, "img": "https://tse4.mm.bing.net/th/id/OIP.AAeMOleCsTZ6bN_MA_cQqQHaEK?rs=1&pid=ImgDetMain&o=7&rm=3"},
+        {"name": "maggi ", "price": 20, "img": "https://th.bing.com/th/id/OIP.MRapZiIRkzMJDotroNDHjgHaEK?o=7rm=3&rs=1&pid=ImgDetMain&o=7&rm=3"},
+        {"name": "cake", "price": 70, "img": "https://patelbakery.in/wp-content/uploads/2021/06/chocolate-pastry-2-new.jpg"}
+    ],
+    "Saturday": [
+        {"name": "Aloo Paratha", "price": 40, "img": "https://tse4.mm.bing.net/th/id/OIP.Lq0URBXQfvmhpZF0bYbWEAHaFz?rs=1&pid=ImgDetMain&o=7&rm=3"},
+        {"name": "Curd", "price": 20, "img": "https://media.istockphoto.com/photos/yogurt-is-good-for-health-with-black-background-picture-id1214850940?b=1&k=20&m=1214850940&s=170667a&w=0&h=TK72cIpgpufxOq8NeL1ZrGs3ZIzc0YlHB3dLdR37-Bo="},
+        {"name": "Spring Rolls", "price": 50, "img": "https://wallpaperaccess.com/full/6905828.jpg"}
+    ]
 }
 
-special_dish = {
-    "Monday": "Poha with a twist of peanuts",
-    "Tuesday": "Steamy Idli served with spicy chutney",
-    "Wednesday": "Chole Bhature – the king of taste",
-    "Thursday": "Maggi magic for your hunger",
-    "Friday": "Crispy Dosa – south Indian delight",
-    "Saturday": "Full Thali – feast like a king"
-}
+# ---------- Day Selection ----------
+day = st.selectbox("📅 Select day of the week", list(weekly_menu.keys()))
 
-# ---- APP TITLE ----
-st.title("🍽 Welcome to Our College Canteen")
-st.subheader("Good Food = Good Mood! Stay Happy 😄")
+# ---------- Show Menu ----------
+st.markdown(f"## 🍴 Menu for {day}")
+cols = st.columns(len(weekly_menu[day]))
+quantities = {}
 
-# ---- DAY SELECTION ----
-day = st.selectbox("Select day of the week", list(weekly_menu.keys()))
-menu = weekly_menu[day]
+for i, item in enumerate(weekly_menu[day]):
+    with cols[i]:
+        st.markdown(f"<div class='food-card'>", unsafe_allow_html=True)
+        st.image(item["img"], width=180)
+        st.write(f"**{item['name']} - ₹{item['price']}**")
+        qty = st.number_input(f"Qty {item['name']}", 0, 10, 0, key=item["name"])
+        quantities[item["name"]] = qty
+        st.markdown("</div>", unsafe_allow_html=True)
 
-# ---- FUNCTION TO LOAD AND PAD IMAGES ----
-def load_and_pad_image(url, size=(150,150)):
-    response = requests.get(url)
-    img = Image.open(BytesIO(response.content))
-    img = ImageOps.fit(img, size, Image.ANTIALIAS)
-    return img
+# ---------- Bill Calculation ----------
+st.markdown("---")
+st.markdown("## 🛒 Place Your Order")
 
-# ---- DISPLAY MENU ----
-st.write(f"### Menu for {day}")
-cols = st.columns(len(menu))
-for idx, (key, value) in enumerate(menu.items()):
-    item, price, img_url = value
-    with cols[idx]:
-        img = load_and_pad_image(img_url)
-        st.image(img, caption=f"{item}\nRs.{price}")
+with st.container():
+    st.markdown("<div class='order-box'>", unsafe_allow_html=True)
+    total = sum(item["price"] * quantities[item["name"]] for item in weekly_menu[day])
 
-st.write(f"**Special Dish:** {special_dish[day]}")
+    for item in weekly_menu[day]:
+        if quantities[item["name"]] > 0:
+            st.write(f"➡️ {item['name']} x {quantities[item['name']]} = ₹{item['price']*quantities[item['name']]}")
 
-# ---- ORDER SECTION ----
-st.write("---")
-st.write("### Place your order")
-order = {}
-for key, value in menu.items():
-    item, price, img_url = value
-    qty = st.number_input(f"{item} (Rs.{price})", min_value=0, step=1, key=key)
-    if qty > 0:
-        order[key] = qty
+    st.markdown(f"### 💰 Total Bill: **₹{total}**")
 
-# ---- BILL ----
-if st.button("Generate Bill"):
-    if order:
-        st.write("### 🧾 Bill Receipt")
-        total = 0
-        for item_no, qty in order.items():
-            item, price, img_url = menu[item_no]
-            cost = price * qty
-            total += cost
-            st.write(f"{item} x {qty} = Rs.{cost}")
-        st.write(f"**Total Bill = Rs.{total}**")
-        st.success("Thank you for visiting our Canteen! Come hungry, leave happy 😋")
-    else:
-        st.warning("No items selected. Visit again when hungry!")
+    if st.button("✅ Confirm Order"):
+        if total > 0:
+            st.success(f"🎉 Order placed successfully! Please pay ₹{total} at the counter.")
+        else:
+            st.warning("⚠️ Please select at least one item to order.")
+    st.markdown("</div>", unsafe_allow_html=True)
