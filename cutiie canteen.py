@@ -92,6 +92,16 @@ weekly_menu = {
         {"name": "Spring Rolls", "price": 50, "img": "https://wallpaperaccess.com/full/6905828.jpg"}
     ]
 }
+# ---------- Special Dishes ---------- 
+special_dishes = {
+    "Monday": "Poha with a twist of peanuts",
+    "Tuesday": "Steamy Idli served with spicy chutney",
+    "Wednesday": "Chole Bhature – the king of taste",
+    "Thursday": "Maggi magic for your hunger",
+    "Friday": "Crispy Dosa – south Indian delight",
+    "Saturday": "Full Thali – feast like a king"
+}
+
 
 # ---------- Day Selection ----------
 day = st.selectbox("📅 Select day of the week", list(weekly_menu.keys()))
@@ -100,12 +110,21 @@ day = st.selectbox("📅 Select day of the week", list(weekly_menu.keys()))
 st.markdown(f"## 🍴 Menu for {day}")
 cols = st.columns(len(weekly_menu[day]))
 quantities = {}
+# ---------- Special Dish ---------- 
+st.markdown(
+    f"""
+    <div class="food-card" style="background:#fff8e1; border-left:6px solid #ff9800; text-align:center;">
+        <h3>🌟 Special Dish of the Day</h3>
+        <p style="font-size:18px; color:#d84315;">{special_dishes[day]}</p>
+    </div>
+    """,
+    unsafe_allow_html=True
+)
 
 for i, item in enumerate(weekly_menu[day]):
     with cols[i]:
         st.markdown(f"<div class='food-card'>", unsafe_allow_html=True)
-        st.image(item["img"], width=180)
-        st.write(f"**{item['name']} - ₹{item['price']}**")
+        st.image(item["img"], use_column_width=True, caption=f"{item['name']} - ₹{item['price']}")
         qty = st.number_input(f"Qty {item['name']}", 0, 10, 0, key=item["name"])
         quantities[item["name"]] = qty
         st.markdown("</div>", unsafe_allow_html=True)
