@@ -135,29 +135,43 @@ st.markdown("---")
 st.markdown("## 🛒 Place Your Order")
 
 with st.container():
-    st.markdown("<div class='order-box'>", unsafe_allow_html=True)
+    st.markdown("""
+    <div style="
+        background: linear-gradient(135deg, #fdf6e3, #e0f7fa);
+        padding: 20px;
+        border-radius: 15px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    ">
+    """, unsafe_allow_html=True)
+
+    # Calculate total
     total = sum(item["price"] * quantities[item["name"]] for item in weekly_menu[day])
 
+    # Display items
     for item in weekly_menu[day]:
         if quantities[item["name"]] > 0:
-            st.write(f"➡️ {item['name']} x {quantities[item['name']]} = ₹{item['price']*quantities[item['name']]}")
+            st.markdown(f"<p style='font-size:16px; color:#00695c;'>➡️ {item['name']} x {quantities[item['name']]} = ₹{item['price']*quantities[item['name']]}</p>", unsafe_allow_html=True)
 
-    st.markdown(f"### 💰 Total Bill: **₹{total}**")
+    # Show total
+    st.markdown(f"<h3 style='color:#d84315;'>💰 Total Bill: ₹{total}</h3>", unsafe_allow_html=True)
 
+    # Confirm order button
     if st.button("✅ Confirm Order"):
         if total > 0:
             st.success(f"🎉 Order placed successfully! Please pay ₹{total} at the counter.")
+
+            # Thank You message
+            st.markdown("""
+            <hr>
+            <div style="text-align:center; font-size:18px; color:#1565c0;">
+                ========================================  
+                <br>🙏 Thank you for visiting our Canteen 🍴  
+                <br>Come hungry, leave happy 😋  
+                <br>========================================  
+            </div>
+            <hr>
+            """, unsafe_allow_html=True)
         else:
             st.warning("⚠️ Please select at least one item to order.")
-    st.markdown("</div>", unsafe_allow_html=True)
-    st.markdown("""
-<hr>
-<div style="text-align:center; font-size:18px; color:#1565c0;">
-    ========================================  
-    <br>Thank you for visiting our Canteen 🍴  
-    <br>Come hungry, leave happy 😋  
-    <br>========================================  
-</div>
-<hr>
-""", unsafe_allow_html=True)
 
+    st.markdown("</div>", unsafe_allow_html=True)
