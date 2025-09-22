@@ -150,3 +150,14 @@ with st.container():
         else:
             st.warning("⚠️ Please select at least one item to order.")
     st.markdown("</div>", unsafe_allow_html=True)
+    st.markdown("""
+<hr>
+<div style="text-align:center; font-size:18px; color:#1565c0;">
+    ========================================  
+    <br>Thank you for visiting our Canteen 🍴  
+    <br>Come hungry, leave happy 😋  
+    <br>========================================  
+</div>
+<hr>
+""", unsafe_allow_html=True)
+
